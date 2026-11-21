@@ -103,11 +103,13 @@ export function updateTimerDisplay(phaseEndsAt) {
 export function renderGameRoom(room, onSelectTarget) {
   const phaseCfg = PHASES[room.phase] || PHASES.WAITING;
   const me = room.players.find((p) => p.id === state.user?.id);
+  const isGameOver = room.phase === 'GAME_OVER';
 
   qs('#game-day-counter').textContent = `День ${room.dayNumber || 1}`;
   qs('#game-phase-title').textContent = phaseCfg.title;
 
   updateTimerDisplay(room.phaseEndsAt);
+
   let bannerText = room.lastAnnouncement || phaseCfg.banner;
   if (
     room.detectiveReport &&
@@ -122,27 +124,42 @@ export function renderGameRoom(room, onSelectTarget) {
   const myRoleObj = me?.role ? ROLES[me.role] : null;
   qs('#my-role-name').textContent = myRoleObj ? myRoleObj.name : 'Неизвестно';
 
-  const canAct = Boolean(
-    me &&
-    me.isAlive &&
-    !state.actionSubmitted &&
-    (phaseCfg.activeRole === 'ALL' || phaseCfg.activeRole === me.role)
-  );
+  const activeBoss = room.players.find((p) => p.isAlive && p.role === 'MAFIA_BOSS');
+  const activeShooter = activeBoss || room.players.find((p) => p.isAlive && p.role === 'MAFIA');
+
+  let isMyTurn = false;
+  if (me && me.isAlive && !isGameOver && !state.actionSubmitted) {
+    if (phaseCfg.activeRole === 'ALL') {
+      isMyTurn = true;
+    } else if (room.phase === 'NIGHT_MAFIA') {
+      isMyTurn = activeShooter?.id === me.id;
+    } else {
+      isMyTurn = phaseCfg.activeRole === me.role;
+    }
+  }
 
   const table = qs('#game-table');
   clearEl(table);
 
   room.players.forEach((player) => {
+    const isMe = player.id === me?.id;
+    const isMafiaAlly =
+      (me?.role === 'MAFIA_BOSS' || me?.role === 'MAFIA') &&
+      (player.role === 'MAFIA_BOSS' || player.role === 'MAFIA');
     const isSelected = state.selectedTargetId === player.id;
+    
     const seatClasses = ['player-seat'];
     if (!player.isAlive) seatClasses.push('dead');
     if (isSelected) seatClasses.push('selected');
 
-    const statusText = !player.isAlive
-      ? `Выбыл (${ROLES[player.role]?.name || 'Роль скрыта'})`
-      : player.id === me?.id
-        ? 'Это вы'
-        : 'В игре';
+    let statusText = 'В игре';
+    if (isGameOver || !player.isAlive) {
+      statusText = `${player.isAlive ? 'Выжил' : 'Выбыл'} (${ROLES[player.role]?.name || 'Роль скрыта'})`;
+    } else if (isMe) {
+      statusText = 'Это вы';
+    } else if (isMafiaAlly) {
+      statusText = 'Союзник (Мафия)';
+    }
 
     const seat = createEl('div', {
       className: seatClasses.join(' '),
@@ -157,7 +174,13 @@ export function renderGameRoom(room, onSelectTarget) {
       ]
     });
 
-    if (canAct && player.isAlive) {
+    const canSelectSelf = room.phase === 'NIGHT_DOCTOR';
+    const isValidTarget =
+      player.isAlive &&
+      (canSelectSelf || !isMe) &&
+      !(room.phase === 'NIGHT_MAFIA' && isMafiaAlly);
+
+    if (isMyTurn && isValidTarget) {
       seat.addEventListener('click', () => onSelectTarget(player.id));
     }
 
@@ -166,11 +189,20 @@ export function renderGameRoom(room, onSelectTarget) {
 
   const actionPanel = qs('#action-panel');
   const confirmBtn = qs('#confirm-action-btn');
-  if (canAct) {
+  if (isMyTurn) {
     actionPanel.classList.remove('hidden');
     qs('#action-prompt').textContent = phaseCfg.prompt;
     confirmBtn.disabled = !state.selectedTargetId;
   } else {
     actionPanel.classList.add('hidden');
+  }
+
+  const gameOverPanel = qs('#game-over-panel');
+  const restartBtn = qs('#restart-game-btn');
+  if (isGameOver) {
+    gameOverPanel.classList.remove('hidden');
+    restartBtn.classList.toggle('hidden', room.hostId !== state.user?.id);
+  } else {
+    gameOverPanel.classList.add('hidden');
   }
 }

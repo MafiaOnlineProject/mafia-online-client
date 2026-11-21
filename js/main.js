@@ -135,10 +135,29 @@ async function initApp() {
     await refreshLobby();
   });
 
+  qs('#exit-game-btn').addEventListener('click', async () => {
+    if (!state.currentRoom) return;
+    await api.leaveRoom(state.currentRoom.id);
+    state.currentRoom = null;
+    state.selectedTargetId = null;
+    state.actionSubmitted = false;
+    showScreen('screen-lobby');
+    await refreshLobby();
+  });
+
   qs('#start-game-btn').addEventListener('click', async () => {
     if (!state.currentRoom) return;
     const { room } = await api.startGame(state.currentRoom.id);
     state.currentRoom = room;
+    syncCurrentView();
+  });
+
+  qs('#restart-game-btn').addEventListener('click', async () => {
+    if (!state.currentRoom) return;
+    const { room } = await api.restartGame(state.currentRoom.id);
+    state.currentRoom = room;
+    state.selectedTargetId = null;
+    state.actionSubmitted = false;
     syncCurrentView();
   });
 

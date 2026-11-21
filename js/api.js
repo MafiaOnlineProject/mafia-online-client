@@ -37,6 +37,7 @@ export const api = {
   leaveRoom: (roomId) => request(`/rooms/${roomId}/leave`, { method: 'POST' }),
   getRoom: (roomId) => request(`/rooms/${roomId}`),
   startGame: (roomId) => request(`/rooms/${roomId}/start`, { method: 'POST' }),
+  restartGame: (roomId) => request(`/rooms/${roomId}/restart`, { method: 'POST' }),
   sendAction: (roomId, targetId) =>
     request(`/rooms/${roomId}/action`, {
       method: 'POST',

@@ -1,4 +1,11 @@
-export const API_BASE_URL = 'http://localhost:3000/api';
+const isLocalNetwork =
+  window.location.hostname === 'localhost' ||
+  window.location.hostname.startsWith('192.168.') ||
+  window.location.hostname.startsWith('10.');
+
+export const API_BASE_URL = isLocalNetwork
+  ? `http://${window.location.hostname}:3000/api`
+  : 'https://voxerium.ru/api'; //Мой сайт пока как заглушка
 
 export const NIGHT_PHASE_DURATION_SEC = 45;
 
