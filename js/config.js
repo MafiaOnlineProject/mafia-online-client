@@ -4,6 +4,7 @@ export const NIGHT_PHASE_DURATION_SEC = 45;
 
 export const ROLES = {
   CIVILIAN: { id: 'CIVILIAN', name: 'Мирный житель', team: 'town' },
+  MAFIA_BOSS: { id: 'MAFIA_BOSS', name: 'Босс Мафии', team: 'mafia' },
   MAFIA: { id: 'MAFIA', name: 'Мафия', team: 'mafia' },
   MISTRESS: { id: 'MISTRESS', name: 'Любовница', team: 'town' },
   DOCTOR: { id: 'DOCTOR', name: 'Доктор', team: 'town' },
@@ -34,7 +35,7 @@ export const PHASES = {
     id: 'NIGHT_MAFIA',
     title: 'Ночь: Ход Мафии',
     banner: 'Доктор засыпает. Просыпается Мафия и выходит на охоту...',
-    activeRole: 'MAFIA',
+    activeRole: ['MAFIA_BOSS', 'MAFIA'],
     prompt: 'Выберите жертву на эту ночь:'
   },
   NIGHT_DETECTIVE: {

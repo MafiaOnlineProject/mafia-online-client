@@ -58,7 +58,7 @@ export function renderRoomsList(rooms, onJoinRoom) {
 export function renderWaitingRoom(room) {
   qs('#waiting-room-title').textContent = room.name;
   qs('#waiting-room-code').textContent = room.code;
-  qs('#waiting-count').textContent = String(room.players.lenght);
+  qs('#waiting-count').textContent = String(room.players.length);
 
   const list = qs('#waiting-players-list');
   clearEl(list);
@@ -87,13 +87,37 @@ export function renderWaitingRoom(room) {
   }
 }
 
+export function updateTimerDisplay(phaseEndsAt) {
+  const timerEl = qs('#game-timer');
+  if (!timerEl) return;
+  if (!phaseEndsAt) {
+    timerEl.textContent = '--:--';
+    return;
+  }
+  const remainingSec = Math.max(0, Math.ceil((phaseEndsAt - Date.now()) / 1000));
+  const mins = String(Math.floor(remainingSec / 60)).padStart(2, '0');
+  const secs = String(remainingSec % 60).padStart(2, '0');
+  timerEl.textContent = `${mins}:${secs}`;
+}
+
 export function renderGameRoom(room, onSelectTarget) {
   const phaseCfg = PHASES[room.phase] || PHASES.WAITING;
   const me = room.players.find((p) => p.id === state.user?.id);
 
   qs('#game-day-counter').textContent = `День ${room.dayNumber || 1}`;
   qs('#game-phase-title').textContent = phaseCfg.title;
-  qs('#narrator-banner').textContent = room.lastAnnouncement || phaseCfg.banner;
+
+  updateTimerDisplay(room.phaseEndsAt);
+  let bannerText = room.lastAnnouncement || phaseCfg.banner;
+  if (
+    room.detectiveReport &&
+    me &&
+    room.detectiveReport.detectiveId === me.id &&
+    room.phase === 'DAY_VOTING'
+  ) {
+    bannerText += `\n[Лично для Детектива]: ${room.detectiveReport.message}`;
+  }
+  qs('#narrator-banner').textContent = bannerText;
 
   const myRoleObj = me?.role ? ROLES[me.role] : null;
   qs('#my-role-name').textContent = myRoleObj ? myRoleObj.name : 'Неизвестно';

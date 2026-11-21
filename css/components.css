@@ -68,6 +68,7 @@ input:focus {
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-muted);
+  margin-top: 10px;
 }
 
 .btn-small {
@@ -109,6 +110,7 @@ input:focus {
   border-radius: var(--radius-md);
   font-size: 1rem;
   line-height: 1.4;
+  white-space: pre-line;
 }
 
 .player-seat {
@@ -173,4 +175,8 @@ input:focus {
   border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
+}
+
+.hint {
+  padding: 10px;
 }

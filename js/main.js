@@ -6,10 +6,12 @@ import {
   renderHeader,
   renderRoomsList,
   renderWaitingRoom,
-  renderGameRoom
+  renderGameRoom,
+  updateTimerDisplay
 } from './ui.js';
 
 let syncInterval = null;
+let timerInterval = null;
 
 function handleSelectTarget(targetId) {
   state.selectedTargetId = targetId;
@@ -60,6 +62,13 @@ function startPolling() {
       showScreen('screen-lobby');
     }
   }, 1500);
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (state.currentRoom?.phaseEndsAt) {
+      updateTimerDisplay(state.currentRoom.phaseEndsAt);
+    }
+  }, 500);
 }
 
 async function initApp() {
@@ -142,6 +151,7 @@ async function initApp() {
 
   qs('#logout-btn').addEventListener('click', () => {
     clearInterval(syncInterval);
+    clearInterval(timerInterval);
     clearSession();
     renderHeader();
     showScreen('screen-auth');
