@@ -5,7 +5,8 @@ export const state = {
   user: null, // { id, username }
   currentRoom: null, // полный объект комнаты с сервера
   selectedTargetId: null, // кого игрок выбрал кликом по карточке
-  actionSubmitted: false // флаг, что ход в текущей фазе уже отправлен
+  actionSubmitted: false, // флаг, что ход в текущей фазе уже отправлен
+  clockOffset: 0
 };
 
 export function loadSession() {

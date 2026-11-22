@@ -168,7 +168,12 @@ async function initApp() {
     renderGameRoom(state.currentRoom, handleSelectTarget);
   });
 
-  qs('#logout-btn').addEventListener('click', () => {
+  qs('#logout-btn').addEventListener('click', async () => {
+    if (state.currentRoom) {
+      try {
+        await api.leaveRoom(state.currentRoom.id);
+      } catch {}
+    }
     clearInterval(syncInterval);
     clearInterval(timerInterval);
     clearSession();

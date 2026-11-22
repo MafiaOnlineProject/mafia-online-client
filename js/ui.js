@@ -94,7 +94,8 @@ export function updateTimerDisplay(phaseEndsAt) {
     timerEl.textContent = '--:--';
     return;
   }
-  const remainingSec = Math.max(0, Math.ceil((phaseEndsAt - Date.now()) / 1000));
+  const nowOnServer = Date.now() + (state.clockOffset || 0);
+  const remainingSec = Math.max(0, Math.ceil((phaseEndsAt - nowOnServer) / 1000));
   const mins = String(Math.floor(remainingSec / 60)).padStart(2, '0');
   const secs = String(remainingSec % 60).padStart(2, '0');
   timerEl.textContent = `${mins}:${secs}`;

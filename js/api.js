@@ -16,6 +16,10 @@ async function request(endpoint, option = {}) {
   if(!res.ok) {
     throw new Error(data.error || 'Ошибка запроса');
   }
+
+  if (data.serverTime) {
+    state.clockOffset = data.serverTime - Date.now();
+  }
   
   return data;
 }
