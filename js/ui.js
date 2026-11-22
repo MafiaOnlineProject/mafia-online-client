@@ -108,6 +108,7 @@ export function updateTimerDisplay(phaseEndsAt) {
 export function renderGameRoom(room, onSelectTarget) {
   const phaseCfg = PHASES[room.phase] || PHASES.WAITING;
   const me = room.players.find((p) => p.id === state.user?.id);
+  const savedTargetId = room.phase === 'DAY_VOTING' ? room.dayVotes?.[me?.id] : null;
   const isGameOver = room.phase === 'GAME_OVER';
 
   qs('#game-day-counter').textContent = `День ${room.dayNumber || 1}`;
@@ -116,6 +117,14 @@ export function renderGameRoom(room, onSelectTarget) {
   updateTimerDisplay(room.phaseEndsAt);
 
   let bannerText = room.lastAnnouncement || phaseCfg.banner;
+
+  if (!room.lastAnnouncement && room.phase === 'NIGHT_DOCTOR') {
+    const hasAliveMistress = room.players.some((p) => p.isAlive && p.role === 'MISTRESS');
+    if (!hasAliveMistress) {
+      bannerText = 'Город засыпает. Просыпается Доктор и решает, кого спасти...';
+    }
+  }
+
   if (
     room.detectiveReport &&
     me &&
@@ -132,8 +141,25 @@ export function renderGameRoom(room, onSelectTarget) {
   const activeBoss = room.players.find((p) => p.isAlive && p.role === 'MAFIA_BOSS');
   const activeShooter = activeBoss || room.players.find((p) => p.isAlive && p.role === 'MAFIA');
 
+  let alreadyActedOnServer = false;
+  if (me) {
+    if (room.phase === 'DAY_VOTING') {
+      alreadyActedOnServer = Boolean(room.dayVotes && room.dayVotes[me.id]);
+    } else if (room.phase === 'NIGHT_MISTRESS') {
+      alreadyActedOnServer = Boolean(room.nightActions?.MISTRESS);
+    } else if (room.phase === 'NIGHT_DOCTOR') {
+      alreadyActedOnServer = Boolean(room.nightActions?.DOCTOR);
+    } else if (room.phase === 'NIGHT_MAFIA') {
+      alreadyActedOnServer = Boolean(room.nightActions?.MAFIA);
+    } else if (room.phase === 'NIGHT_DETECTIVE') {
+      alreadyActedOnServer = Boolean(room.nightActions?.DETECTIVE);
+    }
+  }
+
+  const hasSubmitted = state.actionSubmitted || alreadyActedOnServer;
+
   let isMyTurn = false;
-  if (me && me.isAlive && !isGameOver && !state.actionSubmitted) {
+  if (me && me.isAlive && !isGameOver && !hasSubmitted) {
     if (phaseCfg.activeRole === 'ALL') {
       isMyTurn = true;
     } else if (room.phase === 'NIGHT_MAFIA') {
@@ -151,7 +177,7 @@ export function renderGameRoom(room, onSelectTarget) {
     const isMafiaAlly =
       (me?.role === 'MAFIA_BOSS' || me?.role === 'MAFIA') &&
       (player.role === 'MAFIA_BOSS' || player.role === 'MAFIA');
-    const isSelected = state.selectedTargetId === player.id;
+    const isSelected = (state.selectedTargetId || savedTargetId) === player.id;
     
     const seatClasses = ['player-seat'];
     if (!player.isAlive) seatClasses.push('dead');

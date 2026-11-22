@@ -89,12 +89,14 @@ async function initApp() {
         await refreshLobby();
       }
       startPolling();
-    } catch {
-      clearSession();
-      showScreen('screen-auth');
+    } catch (err) {
+      console.error('Ошибка восстановления сессии:', err);
+      if (err.status === 401) {
+        clearSession();
+        renderHeader();
+        showScreen('screen-auth');
+      }
     }
-  } else {
-    showScreen('screen-auth');
   }
 
   qs('#auth-form').addEventListener('submit', async (e) => {
