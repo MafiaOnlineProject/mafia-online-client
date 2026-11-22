@@ -153,9 +153,18 @@ export function renderGameRoom(room, onSelectTarget) {
     if (!player.isAlive) seatClasses.push('dead');
     if (isSelected) seatClasses.push('selected');
 
+    const hasAlibi = room.phase === 'DAY_VOTING' && room.dayAlibiId === player.id;
+    const isRepeatedTarget =
+      (room.phase === 'NIGHT_MISTRESS' && room.lastTargets?.MISTRESS === player.id) ||
+      (room.phase === 'NIGHT_DOCTOR' && room.lastTargets?.DOCTOR === player.id);
+
     let statusText = 'В игре';
     if (isGameOver || !player.isAlive) {
       statusText = `${player.isAlive ? 'Выжил' : 'Выбыл'} (${ROLES[player.role]?.name || 'Роль скрыта'})`;
+    } else if (hasAlibi) {
+      statusText = 'Алиби (нельзя голосовать)';
+    } else if (isRepeatedTarget && isMyTurn) {
+      statusText = 'Выбран прошлой ночью';
     } else if (isMe) {
       statusText = 'Это вы';
     } else if (isMafiaAlly) {
@@ -164,14 +173,14 @@ export function renderGameRoom(room, onSelectTarget) {
 
     const seat = createEl('div', {
       className: seatClasses.join(' '),
-      dataset: {playerId: String(player.id)},
+      dataset: { playerId: String(player.id) },
       children: [
         createEl('div', {
           className: 'avatar',
           text: player.username.slice(0, 2).toUpperCase()
         }),
-        createEl('strong', {text: player.username}),
-        createEl('span', {className: 'status-label', text: statusText})
+        createEl('strong', { text: player.username }),
+        createEl('span', { className: 'status-label', text: statusText })
       ]
     });
 
@@ -179,7 +188,9 @@ export function renderGameRoom(room, onSelectTarget) {
     const isValidTarget =
       player.isAlive &&
       (canSelectSelf || !isMe) &&
-      !(room.phase === 'NIGHT_MAFIA' && isMafiaAlly);
+      !(room.phase === 'NIGHT_MAFIA' && isMafiaAlly) &&
+      !hasAlibi &&
+      !isRepeatedTarget;
 
     if (isMyTurn && isValidTarget) {
       seat.addEventListener('click', () => onSelectTarget(player.id));
