@@ -57,9 +57,11 @@ function startPolling() {
       } else {
         await refreshLobby();
       }
-    } catch {
-      state.currentRoom = null;
-      showScreen('screen-lobby');
+    } catch (err) {
+      if (err.status === 404 || err.status === 401) {
+        state.currentRoom = null;
+        showScreen('screen-lobby');
+      }
     }
   }, 1500);
 
@@ -143,6 +145,13 @@ async function initApp() {
     state.actionSubmitted = false;
     showScreen('screen-lobby');
     await refreshLobby();
+  });
+
+  qs('#add-bot-btn').addEventListener('click', async () => {
+    if (!state.currentRoom) return;
+    const { room } = await api.addBot(state.currentRoom.id);
+    state.currentRoom = room;
+    syncCurrentView();
   });
 
   qs('#start-game-btn').addEventListener('click', async () => {

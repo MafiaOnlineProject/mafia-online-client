@@ -78,6 +78,10 @@ export function renderWaitingRoom(room) {
   });
 
   const hostControls = qs('#host-controls');
+
+  const addBotBtn = qs('#add-bot-btn');
+  if (addBotBtn) addBotBtn.disabled = room.players.length >= 12;
+
   const startBtn = qs('#start-game-btn');
   if (state.user && room.hostId === state.user.id) {
     hostControls.classList.remove('hidden');

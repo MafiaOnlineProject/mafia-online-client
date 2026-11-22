@@ -5,7 +5,7 @@ const isLocalNetwork =
 
 export const API_BASE_URL = isLocalNetwork
   ? `http://${window.location.hostname}:3000/api`
-  : 'https://voxerium.ru/api'; //Мой сайт пока как заглушка
+  : 'https://voxerium.ru:3000/api'; //Мой сайт пока как заглушка
 
 export const NIGHT_PHASE_DURATION_SEC = 45;
 

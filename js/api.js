@@ -14,7 +14,9 @@ async function request(endpoint, option = {}) {
 
   const data = await res.json();
   if(!res.ok) {
-    throw new Error(data.error || 'Ошибка запроса');
+    const err = new Error(data.error || 'Ошибка запроса');
+    err.status = res.status;
+    throw err;
   }
 
   if (data.serverTime) {
@@ -40,6 +42,7 @@ export const api = {
   joinRoom: (roomId) => request(`/rooms/${roomId}/join`, { method: 'POST' }),
   leaveRoom: (roomId) => request(`/rooms/${roomId}/leave`, { method: 'POST' }),
   getRoom: (roomId) => request(`/rooms/${roomId}`),
+  addBot: (roomId) => request(`/rooms/${roomId}/add-bot`, { method: 'POST' }),
   startGame: (roomId) => request(`/rooms/${roomId}/start`, { method: 'POST' }),
   restartGame: (roomId) => request(`/rooms/${roomId}/restart`, { method: 'POST' }),
   sendAction: (roomId, targetId) =>
