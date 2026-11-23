@@ -6,6 +6,7 @@ export const ROLES = {
   CIVILIAN: { id: 'CIVILIAN', name: 'Мирный житель', team: 'town' },
   MAFIA_BOSS: { id: 'MAFIA_BOSS', name: 'Босс Мафии', team: 'mafia' },
   MAFIA: { id: 'MAFIA', name: 'Мафия', team: 'mafia' },
+  MANIAC: { id: 'MANIAC', name: 'Маньяк', team: 'solo' },
   MISTRESS: { id: 'MISTRESS', name: 'Любовница', team: 'town' },
   DOCTOR: { id: 'DOCTOR', name: 'Доктор', team: 'town' },
   DETECTIVE: { id: 'DETECTIVE', name: 'Детектив', team: 'town' }
@@ -38,10 +39,17 @@ export const PHASES = {
     activeRole: ['MAFIA_BOSS', 'MAFIA'],
     prompt: 'Выберите жертву на эту ночь:'
   },
+  NIGHT_MANIAC: {
+    id: 'NIGHT_MANIAC',
+    title: 'Ночь: Ход Маньяка',
+    banner: 'Мафия засыпает. На охоту выходит Маньяк...',
+    activeRole: 'MANIAC',
+    prompt: 'Выберите жертву на эту ночь:'
+  },
   NIGHT_DETECTIVE: {
     id: 'NIGHT_DETECTIVE',
     title: 'Ночь: Ход Детектива',
-    banner: 'Мафия засыпает. Просыпается Детектив и ищет преступников...',
+    banner: 'Агрессор засыпает. Просыпается Детектив и ищет преступников...',
     activeRole: 'DETECTIVE',
     prompt: 'Выберите игрока для проверки его роли:'
   },

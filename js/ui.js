@@ -151,6 +151,8 @@ export function renderGameRoom(room, onSelectTarget) {
       alreadyActedOnServer = Boolean(room.nightActions?.DOCTOR);
     } else if (room.phase === 'NIGHT_MAFIA') {
       alreadyActedOnServer = Boolean(room.nightActions?.MAFIA);
+    } else if (room.phase === 'NIGHT_MANIAC') {
+      alreadyActedOnServer = Boolean(room.nightActions?.MANIAC);
     } else if (room.phase === 'NIGHT_DETECTIVE') {
       alreadyActedOnServer = Boolean(room.nightActions?.DETECTIVE);
     }
