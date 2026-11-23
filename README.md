@@ -3,7 +3,7 @@
 Клиентская часть веб-приложения Mafia Online. Написана на чистом стеке без использования сторонних фреймворков и библиотек для работы с DOM.
 
 ## Ссылка на рабочую версию
-* **Live Demo:** Тут будет ссылка после деплоя на хостинг.
+* **Live Demo:** https://mafiaonlineproject.github.io/mafia-online-client/
 * **Backend репозиторий:** https://github.com/LimTFX/mafia-online-server
 
 ## Технологии и особенности реализации
