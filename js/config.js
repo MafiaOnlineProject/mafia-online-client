@@ -1,11 +1,4 @@
-const isLocalNetwork =
-  window.location.hostname === 'localhost' ||
-  window.location.hostname.startsWith('192.168.') ||
-  window.location.hostname.startsWith('10.');
-
-export const API_BASE_URL = isLocalNetwork
-  ? `http://${window.location.hostname}:3000/api`
-  : 'https://voxerium.ru:3000/api'; //Мой сайт пока как заглушка
+export const API_BASE_URL = 'https://mafiaonline-limtfx.msk1.amvera.tech/api';
 
 export const NIGHT_PHASE_DURATION_SEC = 45;
 
