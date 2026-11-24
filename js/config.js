@@ -10,6 +10,14 @@ export const ROLES = {
   DETECTIVE: { id: 'DETECTIVE', name: 'Детектив', team: 'town' }
 };
 
+export const DEFAULT_ROOM_SETTINGS = {
+  maxPlayers: 12,
+  dayDurationSec: 90,
+  nightDurationSec: 45,
+  enableMistress: true,
+  enableManiac: true
+};
+
 export const PHASES = {
   WAITING: {
     id: 'WAITING',
@@ -21,6 +29,7 @@ export const PHASES = {
     title: 'Ночь: Ход Любовницы',
     banner: 'Город засыпает. Просыпается Любовница и выбирает, к кому пойти в гости...',
     activeRole: 'MISTRESS',
+    actionKey: 'MISTRESS',
     prompt: 'Выберите игрока, чтобы заблокировать его способность на эту ночь:'
   },
   NIGHT_DOCTOR: {
@@ -28,6 +37,7 @@ export const PHASES = {
     title: 'Ночь: Ход Доктора',
     banner: 'Любовница засыпает. Просыпается Доктор и решает, кого спасти...',
     activeRole: 'DOCTOR',
+    actionKey: 'DOCTOR',
     prompt: 'Выберите игрока, которого хотите вылечить:'
   },
   NIGHT_MAFIA: {
@@ -35,6 +45,7 @@ export const PHASES = {
     title: 'Ночь: Ход Мафии',
     banner: 'Доктор засыпает. Просыпается Мафия и выходит на охоту...',
     activeRole: ['MAFIA_BOSS', 'MAFIA'],
+    actionKey: 'MAFIA',
     prompt: 'Выберите жертву на эту ночь:'
   },
   NIGHT_MANIAC: {
@@ -42,6 +53,7 @@ export const PHASES = {
     title: 'Ночь: Ход Маньяка',
     banner: 'Мафия засыпает. На охоту выходит Маньяк...',
     activeRole: 'MANIAC',
+    actionKey: 'MANIAC',
     prompt: 'Выберите жертву на эту ночь:'
   },
   NIGHT_DETECTIVE: {
@@ -49,6 +61,7 @@ export const PHASES = {
     title: 'Ночь: Ход Детектива',
     banner: 'Агрессор засыпает. Просыпается Детектив и ищет преступников...',
     activeRole: 'DETECTIVE',
+    actionKey: 'DETECTIVE',
     prompt: 'Выберите игрока для проверки его роли:'
   },
   DAY_VOTING: {

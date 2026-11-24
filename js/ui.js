@@ -1,5 +1,5 @@
 import { qs, qsa, createEl, clearEl } from './domHelpers.js';
-import { ROLES, PHASES } from './config.js';
+import { ROLES, DEFAULT_ROOM_SETTINGS, PHASES } from './config.js';
 import { state } from './state.js';
 
 export function showScreen(screenId) {
@@ -32,9 +32,16 @@ export function renderRoomsList(rooms, onJoinRoom) {
   }
 
   rooms.forEach((room) => {
+    const statusLabel =
+    room.status === 'WAITING'
+      ? 'Войти'
+      : room.phase === 'GAME_OVER'
+        ? 'Завершено'
+        : 'Идёт игра';
+
     const joinBtn = createEl('button', {
       className: 'btn btn-primary btn-small',
-      text: room.status === 'WAITING' ? 'Войти' : 'Идёт игра'
+      text: statusLabel
     });
     if (room.status !== 'WAITING') joinBtn.disabled = true;
     joinBtn.addEventListener('click', () => onJoinRoom(room.id));
@@ -56,13 +63,7 @@ export function renderRoomsList(rooms, onJoinRoom) {
 }
 
 export function renderWaitingRoom(room) {
-  const settings = room.settings || {
-    maxPlayers: 12,
-    dayDurationSec: 90,
-    nightDurationSec: 45,
-    enableMistress: true,
-    enableManiac: true
-  };
+  const settings = { ...DEFAULT_ROOM_SETTINGS, ...room.settings };
   const maxPlayers = settings.maxPlayers;
 
   qs('#waiting-room-title').textContent = room.name;
@@ -160,22 +161,12 @@ export function renderGameRoom(room, onSelectTarget) {
   const activeBoss = room.players.find((p) => p.isAlive && p.role === 'MAFIA_BOSS');
   const activeShooter = activeBoss || room.players.find((p) => p.isAlive && p.role === 'MAFIA');
 
-  let alreadyActedOnServer = false;
-  if (me) {
-    if (room.phase === 'DAY_VOTING') {
-      alreadyActedOnServer = Boolean(room.dayVotes && room.dayVotes[me.id]);
-    } else if (room.phase === 'NIGHT_MISTRESS') {
-      alreadyActedOnServer = Boolean(room.nightActions?.MISTRESS);
-    } else if (room.phase === 'NIGHT_DOCTOR') {
-      alreadyActedOnServer = Boolean(room.nightActions?.DOCTOR);
-    } else if (room.phase === 'NIGHT_MAFIA') {
-      alreadyActedOnServer = Boolean(room.nightActions?.MAFIA);
-    } else if (room.phase === 'NIGHT_MANIAC') {
-      alreadyActedOnServer = Boolean(room.nightActions?.MANIAC);
-    } else if (room.phase === 'NIGHT_DETECTIVE') {
-      alreadyActedOnServer = Boolean(room.nightActions?.DETECTIVE);
-    }
-  }
+  const alreadyActedOnServer = Boolean(
+    me &&
+      (room.phase === 'DAY_VOTING'
+        ? room.dayVotes?.[me.id]
+        : phaseCfg.actionKey && room.nightActions?.[phaseCfg.actionKey])
+  );
 
   const hasSubmitted = state.actionSubmitted || alreadyActedOnServer;
 
@@ -211,7 +202,8 @@ export function renderGameRoom(room, onSelectTarget) {
 
     let statusText = 'В игре';
     if (isGameOver || !player.isAlive) {
-      statusText = `${player.isAlive ? 'Выжил' : 'Выбыл'} (${ROLES[player.role]?.name || 'Роль скрыта'})`;
+      const stateLabel = player.isLeft ? 'Покинул игру' : player.isAlive ? 'Выжил' : 'Выбыл';
+      statusText = `${stateLabel} (${ROLES[player.role]?.name || 'Роль скрыта'})`;
     } else if (hasAlibi) {
       statusText = 'Алиби (нельзя голосовать)';
     } else if (isRepeatedTarget && isMyTurn) {

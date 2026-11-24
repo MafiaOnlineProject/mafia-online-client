@@ -18,6 +18,18 @@ function handleSelectTarget(targetId) {
   renderGameRoom(state.currentRoom, handleSelectTarget);
 }
 
+async function safe(fn) {
+  try {
+    await fn();
+  } catch (err) {
+    if (err.status === 401) {
+      clearSession(); renderHeader(); showScreen('screen-auth');
+    } else {
+      alert(err.message || 'Что-то пошло не так');
+    }
+  }
+}
+
 function syncCurrentView() {
   const room = state.currentRoom;
   if (!room) return;
@@ -33,11 +45,11 @@ function syncCurrentView() {
 
 async function refreshLobby() {
   const { rooms } = await api.getRooms();
-  renderRoomsList(rooms, async (roomId) => {
+  renderRoomsList(rooms, (roomId) => safe(async () => {
     const { room } = await api.joinRoom(roomId);
     state.currentRoom = room;
     syncCurrentView();
-  });
+  }));
 }
 
 function startPolling() {
@@ -165,15 +177,15 @@ async function initApp() {
     }
   });
 
-  qs('#leave-room-btn').addEventListener('click', async () => {
+  qs('#leave-room-btn').addEventListener('click', () => safe(async () => {
     if (!state.currentRoom) return;
     await api.leaveRoom(state.currentRoom.id);
     state.currentRoom = null;
     showScreen('screen-lobby');
     await refreshLobby();
-  });
+  }));
 
-  qs('#exit-game-btn').addEventListener('click', async () => {
+  qs('#exit-game-btn').addEventListener('click', () => safe(async () => {
     if (!state.currentRoom) return;
     await api.leaveRoom(state.currentRoom.id);
     state.currentRoom = null;
@@ -181,36 +193,52 @@ async function initApp() {
     state.actionSubmitted = false;
     showScreen('screen-lobby');
     await refreshLobby();
-  });
+  }));
 
-  qs('#add-bot-btn').addEventListener('click', async () => {
+  qs('#add-bot-btn').addEventListener('click', () => safe(async () => {
     if (!state.currentRoom) return;
     const { room } = await api.addBot(state.currentRoom.id);
     state.currentRoom = room;
     syncCurrentView();
-  });
+  }));
 
-  qs('#start-game-btn').addEventListener('click', async () => {
+  qs('#start-game-btn').addEventListener('click', () => safe(async () => {
     if (!state.currentRoom) return;
     const { room } = await api.startGame(state.currentRoom.id);
     state.currentRoom = room;
     syncCurrentView();
-  });
+  }));
 
-  qs('#restart-game-btn').addEventListener('click', async () => {
+  qs('#restart-game-btn').addEventListener('click', () => safe(async () => {
     if (!state.currentRoom) return;
     const { room } = await api.restartGame(state.currentRoom.id);
     state.currentRoom = room;
     state.selectedTargetId = null;
     state.actionSubmitted = false;
     syncCurrentView();
-  });
+  }));
 
   qs('#confirm-action-btn').addEventListener('click', async () => {
     if (!state.currentRoom || !state.selectedTargetId) return;
-    await api.sendAction(state.currentRoom.id, state.selectedTargetId);
-    state.actionSubmitted = true;
-    renderGameRoom(state.currentRoom, handleSelectTarget);
+    const btn = qs('#confirm-action-btn');
+    btn.disabled = true;
+
+    try {
+      const { room } = await api.sendAction(state.currentRoom.id, state.selectedTargetId);
+      state.actionSubmitted = true;
+      state.currentRoom = room;
+      syncCurrentView();
+    } catch (err) {
+      btn.disabled = false;
+      alert(err.message);
+      if (state.currentRoom) {
+        try {
+          const { room } = await api.getRoom(state.currentRoom.id);
+          state.currentRoom = room;
+          syncCurrentView();
+        } catch {}
+      }
+    }
   });
 
   qs('#logout-btn').addEventListener('click', async () => {

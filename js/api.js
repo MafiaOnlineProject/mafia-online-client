@@ -12,10 +12,11 @@ async function request(endpoint, option = {}) {
     headers: { ...headers, ...(option.headers || {}) }
   });
 
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if(!res.ok) {
     const err = new Error(data.error || 'Ошибка запроса');
     err.status = res.status;
+    err.data = data;
     throw err;
   }
 
