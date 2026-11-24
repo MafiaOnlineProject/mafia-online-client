@@ -1,6 +1,4 @@
-export const API_BASE_URL = 'http://localhost:3000/api';
-
-export const NIGHT_PHASE_DURATION_SEC = 45;
+export const API_BASE_URL = 'https://mafiaonline-limtfx.msk1.amvera.tech/api';
 
 export const ROLES = {
   CIVILIAN: { id: 'CIVILIAN', name: 'Мирный житель', team: 'town' },
