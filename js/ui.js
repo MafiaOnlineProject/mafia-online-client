@@ -1,5 +1,5 @@
 import { qs, qsa, createEl, clearEl } from './domHelpers.js';
-import { ROLES, DEFAULT_ROOM_SETTINGS, PHASES } from './config.js';
+import { ROLES, DEFAULT_ROOM_SETTINGS, PLAYER_COLORS, PHASES } from './config.js';
 import { state } from './state.js';
 
 export function showScreen(screenId) {
@@ -62,9 +62,10 @@ export function renderRoomsList(rooms, onJoinRoom) {
   });
 }
 
-export function renderWaitingRoom(room) {
+export function renderWaitingRoom(room, onKickPlayer) {
   const settings = { ...DEFAULT_ROOM_SETTINGS, ...room.settings };
   const maxPlayers = settings.maxPlayers;
+  const amIHost = room.hostId === state.user?.id;
 
   qs('#waiting-room-title').textContent = room.name;
   qs('#waiting-room-code').textContent = room.code;
@@ -91,25 +92,40 @@ export function renderWaitingRoom(room) {
   clearEl(list);
 
   room.players.forEach((player) => {
-    const isHost = player.id === room.hostId;
+    const isPlayerHost = player.id === room.hostId;
+    const rightSide = [
+      createEl('span', {
+        className: 'badge',
+        text: isPlayerHost ? 'Создатель' : player.isBot ? 'Бот' : 'Готов'
+      })
+    ];
+
+    if (amIHost && !isPlayerHost && onKickPlayer) {
+      const kickBtn = createEl('button', {
+        attrs: { type: 'button' },
+        className: 'btn-kick',
+        text: '✕'
+      });
+      kickBtn.title = 'Исключить из комнаты';
+      kickBtn.addEventListener('click', () => onKickPlayer(player.id));
+      rightSide.push(kickBtn);
+    }
+
     const li = createEl('li', {
+      className: 'waiting-player-item',
       children: [
-        createEl('span', {text: player.username}),
-        createEl('span', {
-          className: 'badge',
-          text: isHost ? 'Создатель' : 'Готов'
-        })
+        createEl('span', { text: player.username }),
+        createEl('div', { className: 'btn-group', children: rightSide })
       ]
     });
     list.appendChild(li);
   });
 
-  const isHost = room.hostId === state.user?.id;
   const hostControls = qs('#host-controls');
   const addBotBtn = qs('#add-bot-btn');
   const startBtn = qs('#start-game-btn');
 
-  if (isHost) {
+  if (amIHost) {
     hostControls.classList.remove('hidden');
     startBtn.disabled = room.players.length < 4;
     if (addBotBtn) addBotBtn.disabled = room.players.length >= maxPlayers;
@@ -160,6 +176,9 @@ export function renderGameRoom(room, onSelectTarget) {
   ) {
     bannerText += `\n[Лично для Детектива]: ${room.detectiveReport.message}`;
   }
+
+  bannerText = bannerText.replace(/\{\{ROLE:([A-Z_]+)\}\}/g, (_, roleId) => ROLES[roleId]?.name || roleId);
+
   qs('#narrator-banner').textContent = bannerText;
 
   const myRoleObj = me?.role ? ROLES[me.role] : null;
@@ -191,6 +210,25 @@ export function renderGameRoom(room, onSelectTarget) {
   const table = qs('#game-table');
   clearEl(table);
 
+  const playerColorMap = new Map();
+  room.players.forEach((p, idx) => {
+    playerColorMap.set(p.id, PLAYER_COLORS[idx % PLAYER_COLORS.length]);
+  });
+
+  const votersByTarget = {};
+  if ((room.phase === 'DAY_RESULTS' || room.phase === 'GAME_OVER') && room.dayVotes) {
+    Object.entries(room.dayVotes).forEach(([voterIdStr, targetId]) => {
+      const voter = room.players.find((p) => p.id === Number(voterIdStr));
+      if (voter) {
+        if (!votersByTarget[targetId]) votersByTarget[targetId] = [];
+        votersByTarget[targetId].push({
+          username: voter.username,
+          color: playerColorMap.get(voter.id) || '#9ca3af'
+        });
+      }
+    });
+  }
+
   room.players.forEach((player) => {
     const isMe = player.id === me?.id;
     const isMafiaAlly =
@@ -221,6 +259,19 @@ export function renderGameRoom(room, onSelectTarget) {
       statusText = 'Союзник (Мафия)';
     }
 
+    const playerColor = playerColorMap.get(player.id);
+    const voters = votersByTarget[player.id] || [];
+
+    const voteBadgesEl = createEl('div', {
+      className: 'vote-badges',
+      children: voters.map((v) => {
+        const dot = createEl('span', { className: 'vote-dot' });
+        dot.style.backgroundColor = v.color;
+        dot.title = `Проголосовал: ${v.username}`;
+        return dot;
+      })
+    });
+
     const seat = createEl('div', {
       className: seatClasses.join(' '),
       dataset: { playerId: String(player.id) },
@@ -230,9 +281,12 @@ export function renderGameRoom(room, onSelectTarget) {
           text: player.username.slice(0, 2).toUpperCase()
         }),
         createEl('strong', { text: player.username }),
-        createEl('span', { className: 'status-label', text: statusText })
+        createEl('span', { className: 'status-label', text: statusText }),
+        voteBadgesEl
       ]
     });
+    seat.style.setProperty('--player-color', playerColor);
+    seat.querySelector('.avatar').style.borderColor = playerColor;
 
     const canSelectSelf = room.phase === 'NIGHT_DOCTOR';
     const isValidTarget =

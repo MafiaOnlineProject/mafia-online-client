@@ -35,6 +35,14 @@
   padding: 10px;
 }
 
+.players-waiting-box h3 {
+  text-align: center;
+}
+
+.players-waiting-box p {
+  text-align: center;
+}
+
 .lobby-header {
   display: flex;
   justify-content: space-between;
@@ -65,7 +73,35 @@
 
 .game-table {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, 210px);
+  gap: 14px;
   margin: 1.5rem 0;
+  justify-content: center;
+}
+
+#screen-game {
+  padding-bottom: 10px;
+}
+
+#screen-waiting .card,
+#screen-waiting .waiting-card {
+  max-width: 720px;
+  width: 100%;
+}
+
+#waiting-players-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+}
+
+.waiting-player-item {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 600px) {
+  #waiting-players-list {
+    grid-template-columns: 1fr;
+  }
 }

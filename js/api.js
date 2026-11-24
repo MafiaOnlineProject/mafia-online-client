@@ -44,6 +44,11 @@ export const api = {
   leaveRoom: (roomId) => request(`/rooms/${roomId}/leave`, { method: 'POST' }),
   getRoom: (roomId) => request(`/rooms/${roomId}`),
   addBot: (roomId) => request(`/rooms/${roomId}/add-bot`, { method: 'POST' }),
+  kickPlayer: (roomId, targetId) =>
+  request(`/rooms/${roomId}/kick`, {
+    method: 'POST',
+    body: JSON.stringify({ targetId })
+  }),
   startGame: (roomId) => request(`/rooms/${roomId}/start`, { method: 'POST' }),
   restartGame: (roomId) => request(`/rooms/${roomId}/restart`, { method: 'POST' }),
   sendAction: (roomId, targetId) =>

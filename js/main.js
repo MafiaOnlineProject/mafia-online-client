@@ -30,40 +30,86 @@ async function safe(fn) {
   }
 }
 
+async function handleKickPlayer(targetId) {
+  if (!state.currentRoom) return;
+  return safe(async () => {
+    const { room } = await api.kickPlayer(state.currentRoom.id, targetId);
+    state.currentRoom = room;
+    syncCurrentView();
+  });
+}
+
+//Вывел отдельно, возможно переиспользую
+function handleJoinRoom(roomId) {
+  return safe(async () => {
+    const { room } = await api.joinRoom(roomId);
+    state.currentRoom = room;
+    syncCurrentView();
+  });
+}
+
 function syncCurrentView() {
   const room = state.currentRoom;
   if (!room) return;
 
   if (room.status === 'WAITING') {
     showScreen('screen-waiting');
-    renderWaitingRoom(room);
+    renderWaitingRoom(room, handleKickPlayer);
   } else {
     showScreen('screen-game');
     renderGameRoom(room, handleSelectTarget);
   }
 }
 
+let lastRoomsJson = '';
+
 async function refreshLobby() {
-  const { rooms } = await api.getRooms();
-  renderRoomsList(rooms, (roomId) => safe(async () => {
-    const { room } = await api.joinRoom(roomId);
-    state.currentRoom = room;
-    syncCurrentView();
-  }));
+  try {
+    const { rooms } = await api.getRooms();
+    const nextRoomsJson = JSON.stringify(rooms);
+    if (nextRoomsJson === lastRoomsJson) return;
+
+    lastRoomsJson = nextRoomsJson;
+    renderRoomsList(rooms, handleJoinRoom);
+  } catch (err) {
+    console.error('Ошибка обновления лобби:', err);
+  }
 }
 
 function startPolling() {
   if (syncInterval) clearInterval(syncInterval);
+
+  let pollBusy = false;
+
   syncInterval = setInterval(async () => {
-    if (!state.token) return;
+    if (!state.token || pollBusy) return;
+    pollBusy = true;
     try {
       if (state.currentRoom) {
+        const roomId = state.currentRoom.id;
         const prevPhase = state.currentRoom.phase;
-        const { room } = await api.getRoom(state.currentRoom.id);
+        const { room } = await api.getRoom(roomId);
+
         if (room.phase !== prevPhase) {
           state.selectedTargetId = null;
           state.actionSubmitted = false;
         }
+        
+        if (state.currentRoom?.id !== roomId) return;
+
+        const stillInRoom = room.players.some((p) => p.id === state.user?.id && !p.isLeft);
+        if (!stillInRoom) {
+          state.currentRoom = null;
+          alert('Вы были исключены из комнаты')
+          showScreen('screen-lobby');
+          await refreshLobby();
+          return;
+        }
+
+        if (JSON.stringify(room) === JSON.stringify(state.currentRoom)) {
+          return;
+        }
+
         state.currentRoom = room;
         syncCurrentView();
       } else {
@@ -74,6 +120,8 @@ function startPolling() {
         state.currentRoom = null;
         showScreen('screen-lobby');
       }
+    } finally {
+      pollBusy = false;
     }
   }, 1500);
 
@@ -87,29 +135,6 @@ function startPolling() {
 
 async function initApp() {
   loadSession();
-
-  if (state.token) {
-    try {
-      const { user, activeRoom } = await api.getMe();
-      saveSession(state.token, user);
-      renderHeader();
-      if (activeRoom) {
-        state.currentRoom = activeRoom;
-        syncCurrentView();
-      } else {
-        showScreen('screen-lobby');
-        await refreshLobby();
-      }
-      startPolling();
-    } catch (err) {
-      console.error('Ошибка восстановления сессии:', err);
-      if (err.status === 401) {
-        clearSession();
-        renderHeader();
-        showScreen('screen-auth');
-      }
-    }
-  }
 
   qs('#auth-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -244,6 +269,8 @@ async function initApp() {
     } catch (err) {
       btn.disabled = false;
       alert(err.message);
+      state.selectedTargetId = null;
+      state.actionSubmitted = false;
       if (state.currentRoom) {
         try {
           const { room } = await api.getRoom(state.currentRoom.id);
@@ -260,12 +287,41 @@ async function initApp() {
         await api.leaveRoom(state.currentRoom.id);
       } catch {}
     }
+
+    lastRoomsJson = '';
+    
     clearInterval(syncInterval);
     clearInterval(timerInterval);
     clearSession();
     renderHeader();
     showScreen('screen-auth');
   });
+
+  if (state.token) {
+    try {
+      const { user, activeRoom } = await api.getMe();
+      saveSession(state.token, user);
+      renderHeader();
+      if (activeRoom) {
+        state.currentRoom = activeRoom;
+        syncCurrentView();
+      } else {
+        showScreen('screen-lobby');
+        await refreshLobby();
+      }
+      startPolling();
+    } catch (err) {
+      console.error('Ошибка восстановления сессии:', err);
+      if (err.status === 401) clearSession();
+      renderHeader();
+      showScreen('screen-auth');
+      if (err.status !== 401) 
+          qs('#auth-error').textContent = 'Сервер недоступен, попробуйте позже';
+    }
+  } else {
+    renderHeader();
+    showScreen('screen-auth');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
