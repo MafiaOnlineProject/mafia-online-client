@@ -119,16 +119,50 @@ async function initApp() {
     }
   });
 
+  const createModal = qs('#create-room-modal');
+  const openModal = () => {
+    createModal.classList.remove('hidden');
+    qs('#room-name-input').focus();
+  };
+  const closeModal = () => createModal.classList.add('hidden');
+
+  qs('#open-create-modal-btn').addEventListener('click', openModal);
+  qs('#close-create-modal-btn').addEventListener('click', closeModal);
+  qs('#cancel-create-modal-btn').addEventListener('click', closeModal);
+
+  createModal.addEventListener('click', (e) => {
+    if (e.target === createModal) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !createModal.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+
   qs('#create-room-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const input = qs('#room-name-input');
     const name = input.value.trim();
     if (!name) return;
 
-    const { room } = await api.createRoom(name);
-    input.value = '';
-    state.currentRoom = room;
-    syncCurrentView();
+    const settings = {
+      maxPlayers: Number(qs('#setting-max-players').value),
+      dayDurationSec: Number(qs('#setting-day-duration').value),
+      nightDurationSec: Number(qs('#setting-night-duration').value),
+      enableMistress: qs('#setting-enable-mistress').checked,
+      enableManiac: qs('#setting-enable-maniac').checked
+    };
+
+    try {
+      const { room } = await api.createRoom(name, settings);
+      input.value = '';
+      closeModal();
+      state.currentRoom = room;
+      syncCurrentView();
+    } catch (err) {
+      alert(err.message);
+    }
   });
 
   qs('#leave-room-btn').addEventListener('click', async () => {

@@ -41,10 +41,10 @@
     <section id="screen-lobby" class="screen hidden">
       <div class="lobby-header">
         <h2>Игровые комнаты</h2>
-        <form id="create-room-form" class="inline-form">
-          <input type="text" id="room-name-input" placeholder="Название комнаты" required maxlength="24">
-          <button type="submit" class="btn btn-primary">+ Создать комнату</button>
-        </form>
+        <div class="btn-group">
+          <button id="open-create-modal-btn" type="button" class="btn btn-primary">+ Создать комнату</button>
+          <button id="refresh-rooms-btn" type="button" class="btn btn-secondary">Обновить</button>
+        </div>
       </div>
       <div id="rooms-list" class="rooms-grid"></div>
     </section>
@@ -61,7 +61,8 @@
         </div>
 
         <div class="players-waiting-box">
-          <h3>Игроки в комнате (<span id="waiting-count">0</span>/12):</h3>
+          <p id="waiting-room-settings" class="hint"></p>
+          <h3>Игроки в комнате (<span id="waiting-count">0</span>/<span id="waiting-max-count">12</span>):</h3>
           <ul id="waiting-players-list" class="players-list"></ul>
         </div>
 
@@ -111,5 +112,69 @@
   </main>
 
   <script type="module" src="./js/main.js"></script>
+
+  <div id="create-room-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Создание комнаты</h3>
+        <button id="close-create-modal-btn" type="button" class="modal-close" aria-label="Закрыть">&times;</button>
+      </div>
+
+      <form id="create-room-form" class="modal-form">
+        <label class="setting-item">
+          <span>Название комнаты</span>
+          <input type="text" id="room-name-input" placeholder="Например: Ночной город" required maxlength="30" />
+        </label>
+
+        <div class="modal-settings-grid">
+          <label class="setting-item">
+            <span>Макс. игроков</span>
+            <select id="setting-max-players">
+              <option value="6">6 игроков</option>
+              <option value="8">8 игроков</option>
+              <option value="10">10 игроков</option>
+              <option value="12" selected>12 игроков</option>
+              <option value="16">16 игроков</option>
+            </select>
+          </label>
+
+          <label class="setting-item">
+            <span>Длительность дня</span>
+            <select id="setting-day-duration">
+              <option value="60">60 сек</option>
+              <option value="90" selected>90 сек</option>
+              <option value="120">120 сек</option>
+              <option value="150">150 сек</option>
+            </select>
+          </label>
+
+          <label class="setting-item">
+            <span>Длительность ночи</span>
+            <select id="setting-night-duration">
+              <option value="20">20 сек</option>
+              <option value="30">30 сек</option>
+              <option value="45" selected>45 сек</option>
+              <option value="60">60 сек</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="setting-checkbox">
+          <input type="checkbox" id="setting-enable-mistress" checked />
+          <span>Любовница (от 7 игроков)</span>
+        </label>
+
+        <label class="setting-checkbox">
+          <input type="checkbox" id="setting-enable-maniac" checked />
+          <span>Маньяк (от 12 игроков; иначе 3-я Мафия)</span>
+        </label>
+
+        <div class="modal-actions">
+          <button id="cancel-create-modal-btn" type="button" class="btn btn-secondary">Отмена</button>
+          <button type="submit" class="btn btn-primary">Создать комнату</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

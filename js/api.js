@@ -34,10 +34,10 @@ export const api = {
     }),
   getMe: () => request('/me'),
   getRooms: () => request('/rooms'),
-  createRoom: (name) =>
+  createRoom: (name, settings) =>
     request('/rooms', {
       method: 'POST',
-      body: JSON.stringify({ name })
+      body: JSON.stringify({ name, settings })
     }),
   joinRoom: (roomId) => request(`/rooms/${roomId}/join`, { method: 'POST' }),
   leaveRoom: (roomId) => request(`/rooms/${roomId}/leave`, { method: 'POST' }),

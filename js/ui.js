@@ -45,7 +45,7 @@ export function renderRoomsList(rooms, onJoinRoom) {
         createEl('h3', {text: room.name}),
         createEl('p', {
           className: 'subtitle',
-          text: `Код: ${room.code} ::|:: Игроков: ${room.playerCount}/12`
+          text: `Код: ${room.code} :|: Игроков: ${room.playerCount}/${room.maxPlayers || 12}`
         }),
         joinBtn
       ]
@@ -56,9 +56,28 @@ export function renderRoomsList(rooms, onJoinRoom) {
 }
 
 export function renderWaitingRoom(room) {
+  const settings = room.settings || {
+    maxPlayers: 12,
+    dayDurationSec: 90,
+    nightDurationSec: 45,
+    enableMistress: true,
+    enableManiac: true
+  };
+  const maxPlayers = settings.maxPlayers;
+
   qs('#waiting-room-title').textContent = room.name;
   qs('#waiting-room-code').textContent = room.code;
-  qs('#waiting-count').textContent = String(room.players.length);
+  qs('#waiting-count').textContent = room.players.length;
+  qs('#waiting-max-count').textContent = maxPlayers;
+
+  const settingsInfo = qs('#waiting-room-settings');
+  if (settingsInfo) {
+    const rolesInfo = [
+      settings.enableMistress ? 'Любовница: вкл' : 'Любовница: выкл',
+      settings.enableManiac ? 'Маньяк: вкл' : 'Маньяк: выкл (3-я Мафия)'
+    ].join(' :|: ');
+    settingsInfo.textContent = `День: ${settings.dayDurationSec}с :|: Ночь: ${settings.nightDurationSec}с :|: ${rolesInfo}`;
+  }
 
   const list = qs('#waiting-players-list');
   clearEl(list);
@@ -77,15 +96,15 @@ export function renderWaitingRoom(room) {
     list.appendChild(li);
   });
 
+  const isHost = room.hostId === state.user?.id;
   const hostControls = qs('#host-controls');
-
   const addBotBtn = qs('#add-bot-btn');
-  if (addBotBtn) addBotBtn.disabled = room.players.length >= 12;
-
   const startBtn = qs('#start-game-btn');
-  if (state.user && room.hostId === state.user.id) {
+
+  if (isHost) {
     hostControls.classList.remove('hidden');
     startBtn.disabled = room.players.length < 4;
+    if (addBotBtn) addBotBtn.disabled = room.players.length >= maxPlayers;
   } else {
     hostControls.classList.add('hidden');
   }
