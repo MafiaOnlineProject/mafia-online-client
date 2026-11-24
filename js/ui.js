@@ -73,11 +73,18 @@ export function renderWaitingRoom(room) {
 
   const settingsInfo = qs('#waiting-room-settings');
   if (settingsInfo) {
-    const rolesInfo = [
-      settings.enableMistress ? 'Любовница: вкл' : 'Любовница: выкл',
-      settings.enableManiac ? 'Маньяк: вкл' : 'Маньяк: выкл (3-я Мафия)'
-    ].join(' :|: ');
-    settingsInfo.textContent = `День: ${settings.dayDurationSec}с :|: Ночь: ${settings.nightDurationSec}с :|: ${rolesInfo}`;
+    const infoParts = [
+      `День: ${settings.dayDurationSec}с`,
+      `Ночь: ${settings.nightDurationSec}с`
+    ];
+    if (maxPlayers >= 8) {
+      infoParts.push(settings.enableMistress ? 'Любовница: вкл' : 'Любовница: выкл');
+    }
+    if (maxPlayers >= 12) {
+      infoParts.push(settings.enableManiac ? 'Маньяк: вкл' : 'Маньяк: выкл (3-я Мафия)');
+    }
+
+    settingsInfo.textContent = infoParts.join(' :|: ');
   }
 
   const list = qs('#waiting-players-list');

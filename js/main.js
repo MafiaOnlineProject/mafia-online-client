@@ -131,10 +131,23 @@ async function initApp() {
     }
   });
 
+  const maxPlayersSelect = qs('#setting-max-players');
+  const mistressWrap = qs('#mistress-setting-wrap');
+  const maniacWrap = qs('#maniac-setting-wrap');
+
+  const updateRoleSettingsVisibility = () => {
+    const max = Number(maxPlayersSelect.value);
+    mistressWrap.classList.toggle('hidden', max < 8);
+    maniacWrap.classList.toggle('hidden', max < 12);
+  };
+
+  maxPlayersSelect.addEventListener('change', updateRoleSettingsVisibility);
+
   const createModal = qs('#create-room-modal');
   const openModal = () => {
     createModal.classList.remove('hidden');
     qs('#room-name-input').focus();
+    updateRoleSettingsVisibility();
   };
   const closeModal = () => createModal.classList.add('hidden');
 
