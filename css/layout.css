@@ -35,10 +35,7 @@
   padding: 10px;
 }
 
-.players-waiting-box h3 {
-  text-align: center;
-}
-
+.players-waiting-box h3,
 .players-waiting-box p {
   text-align: center;
 }

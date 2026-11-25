@@ -354,3 +354,42 @@ input:focus {
   justify-content: space-between;
   align-items: center;
 }
+
+.host-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.host-actions-secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--border-color);
+}
+
+.host-actions .btn {
+  width: 100%;
+}
+
+@media (max-width: 740px) {
+  .host-actions {
+    grid-template-columns: 1.6fr 0.8fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .host-actions,
+  .host-actions-secondary {
+    grid-template-columns: 1fr;
+  }
+
+  .host-actions-secondary {
+    padding-right: 0;
+    border-right: none;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+}

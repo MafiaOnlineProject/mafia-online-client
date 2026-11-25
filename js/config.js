@@ -20,7 +20,7 @@ export const DEFAULT_ROOM_SETTINGS = {
 
 export const PLAYER_COLORS = [
   '#fc2b5f', '#9f4aff', '#3964ff', '#ffe600',
-  '#019915', '#f86605', '#32013b', '#684721',
+  '#019915', '#f86605', '#50005f', '#684721',
   '#178f89', '#00d0ff', '#b1b1b1', '#96ff59',
   '#ff5fcf', '#570000', '#013b01', '#000050'
 ];

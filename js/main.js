@@ -168,15 +168,49 @@ async function initApp() {
 
   maxPlayersSelect.addEventListener('change', updateRoleSettingsVisibility);
 
+  let modalMode = 'create';
   const createModal = qs('#create-room-modal');
-  const openModal = () => {
+  const modalTitle = qs('#room-modal-title');
+  const modalSubmitBtn = qs('#room-modal-submit-btn');
+
+  const openCreateModal = () => {
+    modalMode = 'create';
+    modalTitle.textContent = 'Создание комнаты';
+    modalSubmitBtn.textContent = 'Создать комнату';
+
+    qs('#room-name-input').value = '';
+    maxPlayersSelect.value = '12';
+    qs('#setting-day-duration').value = '90';
+    qs('#setting-night-duration').value = '45';
+    qs('#setting-enable-mistress').checked = true;
+    qs('#setting-enable-maniac').checked = true;
+
+    updateRoleSettingsVisibility();
     createModal.classList.remove('hidden');
     qs('#room-name-input').focus();
-    updateRoleSettingsVisibility();
   };
+
+  const openEditModal = () => {
+    if (!state.currentRoom) return;
+    modalMode = 'edit';
+    modalTitle.textContent = 'Настройки комнаты';
+    modalSubmitBtn.textContent = 'Сохранить';
+
+    const s = state.currentRoom.settings || {};
+    qs('#room-name-input').value = state.currentRoom.name || '';
+    maxPlayersSelect.value = String(s.maxPlayers || 12);
+    qs('#setting-day-duration').value = String(s.dayDurationSec || 90);
+    qs('#setting-night-duration').value = String(s.nightDurationSec || 45);
+    qs('#setting-enable-mistress').checked = s.enableMistress !== false;
+    qs('#setting-enable-maniac').checked = s.enableManiac !== false;
+    updateRoleSettingsVisibility();
+    createModal.classList.remove('hidden');
+  };
+
   const closeModal = () => createModal.classList.add('hidden');
 
-  qs('#open-create-modal-btn').addEventListener('click', openModal);
+  qs('#open-create-modal-btn').addEventListener('click', openCreateModal);
+  qs('#edit-room-settings-btn').addEventListener('click', openEditModal);
   qs('#close-create-modal-btn').addEventListener('click', closeModal);
   qs('#cancel-create-modal-btn').addEventListener('click', closeModal);
 
@@ -204,14 +238,31 @@ async function initApp() {
       enableManiac: qs('#setting-enable-maniac').checked
     };
 
+    if (
+      modalMode === 'edit' &&
+      state.currentRoom &&
+      state.currentRoom.players.length > settings.maxPlayers
+    ) {
+      alert(`В комнате уже ${state.currentRoom.players.length} игроков, выберите больший размер`);
+      return;
+    }
+
     try {
-      const { room } = await api.createRoom(name, settings);
+      let res;
+      if (modalMode === 'edit') {
+        if (!state.currentRoom) {closeModal(); return;}
+        res = await api.updateRoomSettings(state.currentRoom.id, name, settings);
+      } else {
+        res = await api.createRoom(name, settings);
+      }
+
       input.value = '';
       closeModal();
-      state.currentRoom = room;
+      state.currentRoom = res.room;
       syncCurrentView();
     } catch (err) {
       alert(err.message);
+      if (modalMode === 'edit') closeModal();
     }
   });
 

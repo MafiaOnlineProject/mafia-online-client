@@ -68,8 +68,11 @@
 
         <div id="host-controls" class="host-controls hidden">
           <p class="hint">Минимум 4 игрока для начала партии</p>
-          <div class="btn-group">
-            <button id="add-bot-btn" type="button" class="btn btn-secondary">Добавить бота</button>
+          <div class="host-actions">
+            <div class="host-actions-secondary">
+              <button id="edit-room-settings-btn" type="button" class="btn btn-secondary">Настройки</button>
+              <button id="add-bot-btn" type="button" class="btn btn-secondary">Добавить бота</button>
+            </div>
             <button id="start-game-btn" type="button" class="btn btn-primary" disabled>Начать игру</button>
           </div>
         </div>
@@ -116,7 +119,7 @@
   <div id="create-room-modal" class="modal-backdrop hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Создание комнаты</h3>
+        <h3 id="room-modal-title">Создание комнаты</h3>
         <button id="close-create-modal-btn" type="button" class="modal-close" aria-label="Закрыть">&times;</button>
       </div>
 
@@ -171,7 +174,7 @@
 
         <div class="modal-actions">
           <button id="cancel-create-modal-btn" type="button" class="btn btn-secondary">Отмена</button>
-          <button type="submit" class="btn btn-primary">Создать комнату</button>
+          <button id="room-modal-submit-btn" type="submit" class="btn btn-primary">Создать комнату</button>
         </div>
       </form>
     </div>
