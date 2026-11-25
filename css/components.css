@@ -112,7 +112,6 @@ input:focus {
   font-size: 1rem;
   line-height: 1.4;
   white-space: pre-line;
-  margin-bottom: 12px;
 }
 
 .modal-backdrop {
@@ -190,16 +189,6 @@ input:focus {
   color: var(--text-muted, #9ca3af);
 }
 
-.setting-item input,
-.setting-item select {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color, #2e3344);
-  background: var(--bg-main, #0f1117);
-  color: var(--text-main, #f3f4f6);
-}
-
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -214,23 +203,6 @@ input:focus {
 
 .create-room-row input {
   flex: 1;
-}
-
-.setting-item select {
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-main);
-  color: var(--text-main);
-}
-
-.setting-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--text-main);
-  cursor: pointer;
 }
 
 .player-seat {
@@ -391,5 +363,238 @@ input:focus {
     border-right: none;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border-color);
+  }
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.game-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chronicle {
+  contain: size;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  order: 2;
+}
+
+.chronicle h3 {
+  flex: none;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.chronicle-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent
+}
+
+.chronicle-day-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+.chronicle-entry {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  padding: 0.5rem 0.65rem;
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.chronicle-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chronicle-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chronicle-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.chronicle-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.chronicle-night { border-left-color: var(--accent-blue); }
+.chronicle-vote  { border-left-color: var(--accent-gold); }
+.chronicle-start { border-left-color: var(--accent-green); }
+.chronicle-end   { border-left-color: var(--accent-red); font-weight: 600; }
+.chronicle-leave { opacity: 0.7; }
+
+@media (max-width: 800px) {
+  .game-layout { grid-template-columns: 1fr; }
+  .chronicle {
+    contain: none;
+    height: 260px;
+    order: 2;
+  }
+  .chronicle-list { max-height: 200px; }
+}
+
+.app-container:has(#screen-game:not(.hidden)) {
+  max-width: 1350px;
+}
+
+.setting-item input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #2e3344);
+  background: var(--bg-main, #0f1117);
+  color: var(--text-main, #f3f4f6);
+}
+
+.setting-item select {
+  width: 100%;
+  padding: 8px 32px 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #2e3344);
+  background-color: var(--bg-main, #0f1117);
+  color: var(--text-main, #f3f4f6);
+  color-scheme: dark;
+  cursor: pointer;
+
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.setting-item select:focus,
+.setting-item input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+.setting-item select option {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.setting-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.m_check {
+  margin-top: 2px;
+}
+
+.setting-checkbox input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  flex: none;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-main);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+}
+
+.setting-checkbox input[type="checkbox"]::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  transform: scale(0);
+  transition: transform 0.12s;
+  background: #fff;
+  clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 22%, 85% 8%, 40% 70%);
+}
+
+.setting-checkbox input[type="checkbox"]:checked {
+  background: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.setting-checkbox input[type="checkbox"]:checked::after {
+  transform: scale(1);
+}
+
+.setting-checkbox input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+@supports (appearance: base-select) {
+  .setting-item select,
+  .setting-item select::picker(select) {
+    appearance: base-select;
+  }
+
+  .setting-item select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-image: none; /* своя стрелка не нужна, ниже родная */
+  }
+
+  .setting-item select::picker-icon {
+    color: var(--text-muted);
+    transition: rotate 0.2s;
+  }
+
+  .setting-item select:open::picker-icon {
+    rotate: 180deg;
+  }
+
+  .setting-item select::picker(select) {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 4px;
+    margin-top: 4px;
+  }
+
+  .setting-item select option {
+    padding: 8px 10px;
+    border-radius: 6px;
+  }
+
+  .setting-item select option:hover {
+    background: var(--bg-elevated);
+  }
+
+  .setting-item select option:checked {
+    background: var(--accent-red);
+    color: #fff;
+  }
+
+  .setting-item select option::checkmark {
+    display: none;
   }
 }

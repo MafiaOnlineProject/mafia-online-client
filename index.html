@@ -81,35 +81,44 @@
 
     <!-- ЭКРАН 4: Игровой стол -->
     <section id="screen-game" class="screen hidden">
-        <div class="game-top-bar">
-          <div class="phase-info">
-            <span id="game-day-counter" class="badge">День 1</span>
-            <h2 id="game-phase-title">Ночь: Ход Любовницы</h2>
-          </div>
-          <div class="timer-box">
-            <span>Осталось:</span>
-            <strong id="game-timer">00:45</strong>
-          </div>
-          <div class="my-role-box">
-            <span>Ваша роль:</span>
-            <strong id="my-role-name" class="role-tag">???</strong>
-          </div>
+      <div class="game-top-bar">
+        <div class="phase-info">
+          <span id="game-day-counter" class="badge">День 1</span>
+          <h2 id="game-phase-title">Ночь: Ход Любовницы</h2>
         </div>
-
-        <div id="narrator-banner" class="narrator-banner">
-          Город засыпает. Просыпается Любовница и делает свой выбор...
+        <div class="timer-box">
+          <span>Осталось:</span>
+          <strong id="game-timer">00:45</strong>
         </div>
-
-      <div id="game-table" class="game-table"></div>
-
-      <div id="action-panel" class="action-panel hidden">
-        <p id="action-prompt">Выберите цель:</p>
-        <button id="confirm-action-btn" class="btn btn-primary" disabled>Подтвердить выбор</button>
+        <div class="my-role-box">
+          <span>Ваша роль:</span>
+          <strong id="my-role-name" class="role-tag">???</strong>
+        </div>
       </div>
 
-      <div id="game-over-panel" class="action-panel hidden">
-        <button id="restart-game-btn" class="btn btn-primary hidden">Сыграть еще раз</button>
-        <button id="exit-game-btn" class="btn btn-outline">Выйти в комнаты</button>
+      <div class="game-layout">
+        <aside class="chronicle">
+          <h3>Хроника</h3>
+          <div id="chronicle-list" class="chronicle-list"></div>
+        </aside>
+
+        <div class="game-main">
+          <div id="narrator-banner" class="narrator-banner">
+            Город засыпает. Просыпается Любовница и делает свой выбор...
+          </div>
+
+          <div id="game-table" class="game-table"></div>
+
+          <div id="action-panel" class="action-panel hidden">
+            <p id="action-prompt">Выберите цель:</p>
+            <button id="confirm-action-btn" class="btn btn-primary" disabled>Подтвердить выбор</button>
+          </div>
+
+          <div id="game-over-panel" class="action-panel hidden">
+            <button id="restart-game-btn" class="btn btn-primary hidden">Сыграть еще раз</button>
+            <button id="exit-game-btn" class="btn btn-outline">Выйти в комнаты</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -163,12 +172,12 @@
         </div>
 
         <label id="mistress-setting-wrap" class="setting-checkbox">
-          <input type="checkbox" id="setting-enable-mistress" checked />
+          <input class="m_check" type="checkbox" id="setting-enable-mistress" checked />
           <span>Любовница (от 8 игроков)</span>
         </label>
 
         <label id="maniac-setting-wrap" class="setting-checkbox">
-          <input type="checkbox" id="setting-enable-maniac" checked />
+          <input class="m_check" type="checkbox" id="setting-enable-maniac" checked />
           <span>Маньяк (от 12 игроков, либо 3-я Мафия)</span>
         </label>
 

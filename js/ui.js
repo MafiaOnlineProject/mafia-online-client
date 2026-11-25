@@ -148,6 +148,42 @@ export function updateTimerDisplay(phaseEndsAt) {
   timerEl.textContent = `${mins}:${secs}`;
 }
 
+export function formatText(text) {
+  return String(text || '').replace(
+    /\{\{ROLE:([A-Z_]+)\}\}/g,
+    (_, roleId) => ROLES[roleId]?.name || roleId
+  );
+}
+
+export function renderChronicle(room) {
+  const box = qs('#chronicle-list');
+  if (!box) return;
+
+  const log = room.log || [];
+  const lastId = log.length ? log[log.length - 1].id : 0;
+  const key = `${room.id}:${log.length}:${lastId}`;
+  if (box.dataset.key === key) return; // ничего не изменилось, не трогаем DOM и прокрутку
+  box.dataset.key = key;
+
+  const prevTop = box.scrollTop;
+  const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 40;
+
+  clearEl(box);
+  let currentDay = null;
+  log.forEach((entry) => {
+    if (entry.day !== currentDay) {
+      currentDay = entry.day;
+      box.appendChild(createEl('div', { className: 'chronicle-day-title', text: `День ${entry.day}` }));
+    }
+    box.appendChild(createEl('div', {
+      className: `chronicle-entry chronicle-${entry.type || 'info'}`,
+      text: formatText(entry.text)
+    }));
+  });
+
+  box.scrollTop = wasAtBottom ? box.scrollHeight : prevTop;
+}
+
 export function renderGameRoom(room, onSelectTarget) {
   const phaseCfg = PHASES[room.phase] || PHASES.WAITING;
   const me = room.players.find((p) => p.id === state.user?.id);
@@ -158,6 +194,8 @@ export function renderGameRoom(room, onSelectTarget) {
   qs('#game-phase-title').textContent = phaseCfg.title;
 
   updateTimerDisplay(room.phaseEndsAt);
+
+  renderChronicle(room);
 
   let bannerText = room.lastAnnouncement || phaseCfg.banner;
 
@@ -177,9 +215,7 @@ export function renderGameRoom(room, onSelectTarget) {
     bannerText += `\n[Лично для Детектива]: ${room.detectiveReport.message}`;
   }
 
-  bannerText = bannerText.replace(/\{\{ROLE:([A-Z_]+)\}\}/g, (_, roleId) => ROLES[roleId]?.name || roleId);
-
-  qs('#narrator-banner').textContent = bannerText;
+  qs('#narrator-banner').textContent = formatText(bannerText);
 
   const myRoleObj = me?.role ? ROLES[me.role] : null;
   qs('#my-role-name').textContent = myRoleObj ? myRoleObj.name : 'Неизвестно';
