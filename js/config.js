@@ -34,7 +34,7 @@ export const PHASES = {
   NIGHT_MISTRESS: {
     id: 'NIGHT_MISTRESS',
     title: 'Ночь: Ход Любовницы',
-    banner: 'Город засыпает. Просыпается Любовница и выбирает, к кому пойти в гости...',
+    banner: 'Просыпается Любовница и выбирает, к кому пойти в гости...',
     activeRole: 'MISTRESS',
     actionKey: 'MISTRESS',
     prompt: 'Выберите игрока, чтобы заблокировать его способность на эту ночь:'
@@ -42,7 +42,7 @@ export const PHASES = {
   NIGHT_DOCTOR: {
     id: 'NIGHT_DOCTOR',
     title: 'Ночь: Ход Доктора',
-    banner: 'Любовница засыпает. Просыпается Доктор и решает, кого спасти...',
+    banner: 'Просыпается Доктор и решает, кого спасти...',
     activeRole: 'DOCTOR',
     actionKey: 'DOCTOR',
     prompt: 'Выберите игрока, которого хотите вылечить:'
@@ -50,7 +50,7 @@ export const PHASES = {
   NIGHT_MAFIA: {
     id: 'NIGHT_MAFIA',
     title: 'Ночь: Ход Мафии',
-    banner: 'Доктор засыпает. Просыпается Мафия и выходит на охоту...',
+    banner: 'Просыпается Мафия и выходит на охоту...',
     activeRole: ['MAFIA_BOSS', 'MAFIA'],
     actionKey: 'MAFIA',
     prompt: 'Выберите жертву на эту ночь:'
@@ -58,7 +58,7 @@ export const PHASES = {
   NIGHT_MANIAC: {
     id: 'NIGHT_MANIAC',
     title: 'Ночь: Ход Маньяка',
-    banner: 'Мафия засыпает. На охоту выходит Маньяк...',
+    banner: 'На охоту выходит Маньяк...',
     activeRole: 'MANIAC',
     actionKey: 'MANIAC',
     prompt: 'Выберите жертву на эту ночь:'
@@ -66,7 +66,7 @@ export const PHASES = {
   NIGHT_DETECTIVE: {
     id: 'NIGHT_DETECTIVE',
     title: 'Ночь: Ход Детектива',
-    banner: 'Агрессор засыпает. Просыпается Детектив и ищет преступников...',
+    banner: 'Просыпается Детектив и ищет преступников...',
     activeRole: 'DETECTIVE',
     actionKey: 'DETECTIVE',
     prompt: 'Выберите игрока для проверки его роли:'

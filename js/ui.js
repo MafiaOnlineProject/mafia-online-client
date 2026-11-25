@@ -155,6 +155,26 @@ export function formatText(text) {
   );
 }
 
+function getNightSleepPrefix(room) {
+  const count = room.players.length;
+  const s = { ...DEFAULT_ROOM_SETTINGS, ...room.settings };
+
+  const activePhases = [];
+  if (count >= 8 && s.enableMistress) {
+    activePhases.push({ phase: 'NIGHT_MISTRESS', sleep: 'Любовница засыпает. ' });
+  }
+  activePhases.push({ phase: 'NIGHT_DOCTOR', sleep: 'Доктор засыпает. ' });
+  activePhases.push({ phase: 'NIGHT_MAFIA', sleep: 'Мафия засыпает. ' });
+  if (count >= 12 && s.enableManiac) {
+    activePhases.push({ phase: 'NIGHT_MANIAC', sleep: 'Маньяк засыпает. ' });
+  }
+  activePhases.push({ phase: 'NIGHT_DETECTIVE', sleep: 'Детектив засыпает. ' });
+
+  const idx = activePhases.findIndex((item) => item.phase === room.phase);
+  if (idx <= 0) return 'Город засыпает. ';
+  return activePhases[idx - 1].sleep;
+}
+
 export function renderChronicle(room) {
   const box = qs('#chronicle-list');
   if (!box) return;
@@ -197,25 +217,14 @@ export function renderGameRoom(room, onSelectTarget) {
 
   renderChronicle(room);
 
-  let bannerText = room.lastAnnouncement || phaseCfg.banner;
-
-  if (!room.lastAnnouncement && room.phase === 'NIGHT_DOCTOR') {
-    const hasAliveMistress = room.players.some((p) => p.isAlive && p.role === 'MISTRESS');
-    if (!hasAliveMistress) {
-      bannerText = 'Город засыпает. Просыпается Доктор и решает, кого спасти...';
-    }
+  let bannerText = room.lastAnnouncement;
+  if (!bannerText) {
+    const prefix = room.phase.startsWith('NIGHT_') ? getNightSleepPrefix(room) : '';
+    bannerText = `${prefix}${phaseCfg.banner}`;
   }
 
-  if (
-    room.detectiveReport &&
-    me &&
-    room.detectiveReport.detectiveId === me.id &&
-    room.phase === 'DAY_VOTING'
-  ) {
-    bannerText += `\n[Лично для Детектива]: ${room.detectiveReport.message}`;
-  }
-
-  qs('#narrator-banner').textContent = formatText(bannerText);
+  bannerText = formatText(bannerText);
+  qs('#narrator-banner').textContent = bannerText;
 
   const myRoleObj = me?.role ? ROLES[me.role] : null;
   qs('#my-role-name').textContent = myRoleObj ? myRoleObj.name : 'Неизвестно';
@@ -338,6 +347,24 @@ export function renderGameRoom(room, onSelectTarget) {
 
     table.appendChild(seat);
   });
+
+  const idleEl = qs('#action-idle');
+
+  let idleText = '';
+  if (!isGameOver && !isMyTurn) {
+    if (!me || !me.isAlive) {
+      idleText = 'Вы выбыли из игры. Наблюдайте за ходом партии.';
+    } else if (hasSubmitted) {
+      idleText = 'Выбор сделан. Ожидайте остальных игроков...';
+    } else if (room.phase === 'DAY_RESULTS') {
+      idleText = 'Подводим итоги голосования...';
+    } else {
+      idleText = 'Сейчас ход других игроков. Ожидайте...';
+    }
+  }
+
+  idleEl.textContent = idleText;
+  idleEl.classList.toggle('hidden', !idleText);
 
   const actionPanel = qs('#action-panel');
   const confirmBtn = qs('#confirm-action-btn');

@@ -68,7 +68,6 @@ input:focus {
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-muted);
-  margin-top: 10px;
 }
 
 .btn-small {
@@ -105,6 +104,7 @@ input:focus {
 }
 
 .narrator-banner {
+  display: flex;
   background: linear-gradient(90deg, rgba(225, 29, 72, 0.15), rgba(59, 130, 246, 0.15));
   border-left: 4px solid var(--accent-red);
   padding: 10px 14px;
@@ -112,6 +112,8 @@ input:focus {
   font-size: 1rem;
   line-height: 1.4;
   white-space: pre-line;
+  align-items: center;
+  min-height: 65px;
 }
 
 .modal-backdrop {
@@ -261,7 +263,6 @@ input:focus {
 
 .action-panel {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
   padding: 1rem 1.5rem;
   border-radius: var(--radius-md);
   display: flex;
@@ -597,4 +598,35 @@ input:focus {
   .setting-item select option::checkmark {
     display: none;
   }
+}
+
+.action-slot {
+  min-height: 75px;
+  background: #1a1d2750;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.action-idle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
+.chronicle-private {
+  border-left-color: var(--accent-gold);
+  background: rgba(245, 158, 11, 0.1);
+  font-style: italic;
+}
+
+.chronicle-action {
+  border-left-color: var(--accent-gold);
+  background: rgba(245, 158, 11, 0.1);
+  font-style: italic;
+}
+
+.chronicle-mafia {
+  border-left-color: var(--accent-red);
+  background: rgba(225, 29, 72, 0.1);
 }

@@ -106,17 +106,21 @@
           <div id="narrator-banner" class="narrator-banner">
             Город засыпает. Просыпается Любовница и делает свой выбор...
           </div>
-
+          
           <div id="game-table" class="game-table"></div>
 
-          <div id="action-panel" class="action-panel hidden">
-            <p id="action-prompt">Выберите цель:</p>
-            <button id="confirm-action-btn" class="btn btn-primary" disabled>Подтвердить выбор</button>
-          </div>
+          <div class="action-slot">
+            <p id="action-idle" class="action-idle hidden"></p>
 
-          <div id="game-over-panel" class="action-panel hidden">
-            <button id="restart-game-btn" class="btn btn-primary hidden">Сыграть еще раз</button>
-            <button id="exit-game-btn" class="btn btn-outline">Выйти в комнаты</button>
+            <div id="action-panel" class="action-panel hidden">
+              <p id="action-prompt">Выберите цель:</p>
+              <button id="confirm-action-btn" class="btn btn-primary" disabled>Подтвердить выбор</button>
+            </div>
+
+            <div id="game-over-panel" class="action-panel hidden">
+              <button id="restart-game-btn" class="btn btn-primary hidden">Сыграть еще раз</button>
+              <button id="exit-game-btn" class="btn btn-outline">Выйти в комнаты</button>
+            </div>
           </div>
         </div>
       </div>
@@ -161,7 +165,7 @@
           </label>
 
           <label class="setting-item">
-            <span>Длительность ночи</span>
+            <span>Длительность хода</span>
             <select id="setting-night-duration">
               <option value="20">20 сек</option>
               <option value="30">30 сек</option>
