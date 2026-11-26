@@ -28,11 +28,12 @@ async function request(endpoint, option = {}) {
 }
 
 export const api = {
-  auth: (mode, username, password) =>
-    request(`/auth/${mode}`, {
-      method: 'POST',
-      body: JSON.stringify({ username, password })
+  register: (username) =>
+    request('/auth/register', { 
+      method: 'POST', 
+      body: JSON.stringify({ username }) 
     }),
+  logout: () => request('/auth/logout', { method: 'POST' }),
   getMe: () => request('/me'),
   getRooms: () => request('/rooms'),
   createRoom: (name, settings) =>

@@ -24,14 +24,10 @@
     <section id="screen-auth" class="screen hidden">
       <div class="card auth-card">
         <h1>Вход в игру</h1>
-        <p class="subtitle">Введите логин и пароль для сохранения сессии</p>
+        <p class="subtitle">Придумайте никнейм, чтобы начать</p>
         <form id="auth-form" class="form-stack">
           <input type="text" id="auth-username" placeholder="Ваш никнейм" required minlength="2" maxlength="16">
-          <input type="password" id="auth-password" placeholder="Пароль" required minlength="3">
-          <div class="btn-group">
-            <button type="submit" data-mode="login" class="btn btn-primary">Войти</button>
-            <button type="submit" data-mode="register" class="btn btn-secondary">Регистрация</button>
-          </div>
+          <button type="submit" class="btn btn-primary">Играть</button>
           <p id="auth-error" class="error-text"></p>
         </form>
       </div>
@@ -106,7 +102,7 @@
           <div id="narrator-banner" class="narrator-banner">
             Город засыпает. Просыпается Любовница и делает свой выбор...
           </div>
-          
+
           <div id="game-table" class="game-table"></div>
 
           <div class="action-slot">

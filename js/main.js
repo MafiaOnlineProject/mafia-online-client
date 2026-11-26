@@ -138,14 +138,12 @@ async function initApp() {
 
   qs('#auth-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const mode = e.submitter?.dataset.mode || 'login';
     const username = qs('#auth-username').value.trim();
-    const password = qs('#auth-password').value;
     const errorEl = qs('#auth-error');
     errorEl.textContent = '';
 
     try {
-      const { token, user } = await api.auth(mode, username, password);
+      const { token, user } = await api.register(username);
       saveSession(token, user);
       renderHeader();
       showScreen('screen-lobby');
@@ -338,6 +336,10 @@ async function initApp() {
         await api.leaveRoom(state.currentRoom.id);
       } catch {}
     }
+
+    try { 
+      await api.logout(); 
+    } catch {}
 
     lastRoomsJson = '';
     
