@@ -100,7 +100,6 @@ input:focus {
   border-radius: 6px;
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin-top: 10px;
 }
 
 .narrator-banner {
@@ -449,16 +448,6 @@ input:focus {
 .chronicle-end   { border-left-color: var(--accent-red); font-weight: 600; }
 .chronicle-leave { opacity: 0.7; }
 
-@media (max-width: 800px) {
-  .game-layout { grid-template-columns: 1fr; }
-  .chronicle {
-    contain: none;
-    height: 260px;
-    order: 2;
-  }
-  .chronicle-list { max-height: 200px; }
-}
-
 .app-container:has(#screen-game:not(.hidden)) {
   max-width: 1350px;
 }
@@ -561,7 +550,7 @@ input:focus {
     justify-content: space-between;
     align-items: center;
     padding: 8px 10px;
-    background-image: none; /* своя стрелка не нужна, ниже родная */
+    background-image: none;
   }
 
   .setting-item select::picker-icon {
@@ -629,4 +618,123 @@ input:focus {
 .chronicle-mafia {
   border-left-color: var(--accent-red);
   background: rgba(225, 29, 72, 0.1);
+}
+
+@media (max-width: 800px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .chronicle {
+    position: static;
+    order: 2;
+    margin-top: 8px;
+  }
+
+  .chronicle-list {
+    max-height: 260px;
+  }
+
+  #game-table,
+  .game-table {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .player-seat {
+    padding: 8px 4px;
+    border-width: 2px;
+    gap: 3px;
+  }
+
+  .player-seat .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+  }
+
+  .player-seat strong {
+    font-size: 0.9rem;
+    line-height: 1.15;
+    word-break: break-word;
+  }
+
+  .player-seat .status-label {
+    font-size: 0.78rem;
+    line-height: 1.15;
+  }
+
+  .vote-badges:empty {
+    display: none;
+  }
+
+  .game-top-bar,
+  .game-header {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .game-top-bar h2,
+  .game-header h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 400px) {
+  #game-table,
+  .game-table {
+    gap: 6px;
+  }
+
+  .player-seat strong {
+    font-size: 0.82rem;
+  }
+
+  .player-seat .status-label {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .game-top-bar, .game-header {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 500px) {
+  #waiting-players-list {
+    gap: 0;
+  }
+  .players-list li {
+    padding: 4px;
+  }
+}
+
+@media (max-width: 450px) {
+  .game-top-bar h2, .game-header h2 {
+    font-size: 1.1rem;
+  }
+  .game-top-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 6px 12px;
+  }
+
+  .game-top-bar > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .game-top-bar .timer-box,
+  .game-top-bar > :nth-child(2) {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .game-top-bar > :last-child {
+    grid-column: 2;
+    justify-self: end;
+  }
 }
