@@ -9,6 +9,7 @@ import {
   renderGameRoom,
   updateTimerDisplay
 } from './ui.js';
+import { initChat, refreshChat } from './chat.js';
 
 let syncInterval = null;
 let timerInterval = null;
@@ -39,7 +40,6 @@ async function handleKickPlayer(targetId) {
   });
 }
 
-//Вывел отдельно, возможно переиспользую
 function handleJoinRoom(roomId) {
   return safe(async () => {
     const { room } = await api.joinRoom(roomId);
@@ -106,6 +106,14 @@ function startPolling() {
           return;
         }
 
+        if (room.status !== 'WAITING') {
+          try {
+            await refreshChat(room);
+          } catch (e) {
+            if (e.status === 401 || e.status === 404) throw e;
+          }
+        }
+
         if (JSON.stringify(room) === JSON.stringify(state.currentRoom)) {
           return;
         }
@@ -135,6 +143,7 @@ function startPolling() {
 
 async function initApp() {
   loadSession();
+  initChat();
 
   qs('#auth-form').addEventListener('submit', async (e) => {
     e.preventDefault();

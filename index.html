@@ -94,8 +94,14 @@
 
       <div class="game-layout">
         <aside class="chronicle">
-          <h3>Хроника</h3>
+          <h3>Чат/Хроника комнаты</h3>
           <div id="chronicle-list" class="chronicle-list"></div>
+
+          <form id="chat-form" class="chat-form" autocomplete="off">
+            <input type="text" id="chat-input" maxlength="200" placeholder="Сообщение…" disabled>
+            <button type="submit" id="chat-send-btn" class="btn btn-primary btn-small" disabled>➤</button>
+          </form>
+          <p id="chat-error" class="chat-error"></p>
         </aside>
 
         <div class="game-main">

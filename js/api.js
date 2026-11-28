@@ -28,6 +28,13 @@ async function request(endpoint, option = {}) {
 }
 
 export const api = {
+  getMessages: (roomId, after, scope) =>
+    request(`/rooms/${roomId}/messages?after=${after}&scope=${encodeURIComponent(scope)}`),
+  sendMessage: (roomId, text) =>
+    request(`/rooms/${roomId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ text })
+    }),
   register: (username) =>
     request('/auth/register', { 
       method: 'POST', 
